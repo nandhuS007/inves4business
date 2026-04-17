@@ -1,0 +1,168 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User account information",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "profileImage": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "seller", "admin"] },
+        "status": { "type": "string", "enum": ["active", "blocked"] },
+        "authProvider": { "type": "string", "enum": ["email", "google"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "email", "role", "status", "authProvider", "createdAt"]
+    },
+    "Listing": {
+      "title": "Listing",
+      "description": "Business for sale",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "location": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "planType": { "type": "string", "enum": ["silver", "gold", "platinum"] },
+        "status": { "type": "string", "enum": ["under_review", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "analytics": {
+          "type": "object",
+          "properties": {
+            "views": { "type": "number" },
+            "clicks": { "type": "number" }
+          }
+        }
+      },
+      "required": ["title", "description", "price", "ownerId", "status", "createdAt"]
+    },
+    "Document": {
+      "title": "Document",
+      "description": "Uploaded business proof",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "listingId": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "fileType": { "type": "string" },
+        "uploadedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "listingId", "fileUrl", "fileType", "uploadedAt"]
+    },
+    "Plan": {
+      "title": "Plan",
+      "description": "Subscription plan details",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "enum": ["Silver", "Gold", "Platinum"] },
+        "price": { "type": "number" },
+        "duration": { "type": "string" },
+        "features": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["name", "price", "duration"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Admin approval feedback",
+      "type": "object",
+      "properties": {
+        "listingId": { "type": "string" },
+        "status": { "type": "string", "enum": ["under_review", "approved", "rejected"] },
+        "adminId": { "type": "string" },
+        "remarks": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["listingId", "status", "updatedAt"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "Conversation between buyer and seller",
+      "type": "object",
+      "properties": {
+        "listingId": { "type": "string" },
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "lastMessage": { "type": "string" },
+        "lastMessageAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["participants", "updatedAt"]
+    },
+    "Favorite": {
+      "title": "Favorite",
+      "description": "Saved listing for a user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "listingId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "listingId", "createdAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Platform subscription payment",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "orderId": { "type": "string" },
+        "amount": { "type": "number" },
+        "plan": { "type": "string" },
+        "paymentStatus": { "type": "string", "enum": ["paid", "pending", "failed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "amount", "plan", "paymentStatus", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/listings/{listingId}": {
+      "schema": "Listing",
+      "description": "Business listings"
+    },
+    "/documents/{docId}": {
+      "schema": "Document",
+      "description": "Verification documents"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Platform transactions"
+    },
+    "/plans/{planId}": {
+      "schema": "Plan",
+      "description": "Marketplace plans"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Listing audit logs"
+    },
+    "/chats/{chatId}": {
+      "schema": "Chat",
+      "description": "Conversations"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": {
+        "title": "Message",
+        "type": "object",
+        "properties": {
+          "senderId": { "type": "string" },
+          "text": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "description": "Individual messages"
+    },
+    "/favorites/{favoriteId}": {
+      "schema": "Favorite",
+      "description": "User saved listings"
+    }
+  }
+}
