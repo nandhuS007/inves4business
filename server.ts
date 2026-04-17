@@ -414,6 +414,9 @@ async function startServer() {
       }
 
       const validPassword = await bcrypt.compare(password, userData.password);
+      if (!validPassword) {
+        return res.status(401).json({ error: "Invalid password" });
+      }
 
       const token = jwt.sign(
         { id: userDoc.id, uid: userDoc.id, email: userData.email, role: userData.role },
