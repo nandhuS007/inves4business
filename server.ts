@@ -96,7 +96,7 @@ if (serviceAccountVar && serviceAccountVar !== "FIREBASE_SERVICE_ACCOUNT" && ser
 // Seed Admin User
 async function seedAdmin() {
   if (admin.apps.length === 0) return;
-  const db = admin.firestore();
+  const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
   const adminEmail = "nandhanandha2426@gmail.com";
   const adminPassword = "Nandha@123";
   
@@ -198,7 +198,7 @@ async function startServer() {
 
       if (admin.apps.length === 0) throw new Error("Database not initialized");
       
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       const userRef = db.collection("users").where("email", "==", email);
       const snapshot = await userRef.get();
       
@@ -271,7 +271,7 @@ async function startServer() {
   app.post("/api/auth/verify-otp", async (req, res) => {
     try {
       const { uid, otp } = req.body;
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       
       const securityDoc = await db.collection("user_security").doc(uid).get();
       if (!securityDoc.exists) return res.status(404).json({ error: "User not found" });
@@ -303,7 +303,7 @@ async function startServer() {
   app.post("/api/auth/verify-email-token", async (req, res) => {
     try {
       const { uid, token } = req.body;
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       
       const securityDoc = await db.collection("user_security").doc(uid).get();
       if (!securityDoc.exists) return res.status(404).json({ error: "User not found" });
@@ -330,7 +330,7 @@ async function startServer() {
   app.post("/api/auth/resend-verification", async (req, res) => {
     try {
       const { uid } = req.body;
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       
       const userDoc = await db.collection("users").doc(uid).get();
       if (!userDoc.exists) return res.status(404).json({ error: "User not found" });
@@ -390,7 +390,7 @@ async function startServer() {
       const { email, password } = req.body;
       if (admin.apps.length === 0) throw new Error("Database not initialized");
 
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       const userRef = db.collection("users").where("email", "==", email);
       const snapshot = await userRef.get();
 
@@ -443,7 +443,7 @@ async function startServer() {
       const { googleUser } = req.body; // User info from Firebase Client SDK
       if (!googleUser || !googleUser.email) return res.status(400).json({ error: "Invalid Google user data" });
 
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       const userRef = db.collection("users").where("email", "==", googleUser.email);
       const snapshot = await userRef.get();
 
@@ -503,7 +503,7 @@ async function startServer() {
       const { email } = req.body;
       if (admin.apps.length === 0) throw new Error("Database not initialized");
 
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       const userRef = db.collection("users").where("email", "==", email);
       const snapshot = await userRef.get();
 
@@ -551,7 +551,7 @@ async function startServer() {
       const { email, token, newPassword } = req.body;
       if (admin.apps.length === 0) throw new Error("Database not initialized");
 
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       const userRef = db.collection("users")
         .where("email", "==", email)
         .where("resetToken", "==", token);
@@ -586,7 +586,7 @@ async function startServer() {
   // Protected Admin Routes
   app.get("/api/admin/dashboard", authenticateToken, adminOnly, async (req, res) => {
     try {
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       const usersSnap = await db.collection("users").get();
       const listingsSnap = await db.collection("listings").get();
       const paymentsSnap = await db.collection("payments").get();
@@ -603,7 +603,7 @@ async function startServer() {
 
   app.get("/api/admin/users", authenticateToken, adminOnly, async (req, res) => {
     try {
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       const usersSnap = await db.collection("users").get();
       const users = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       res.json(users);
@@ -616,7 +616,7 @@ async function startServer() {
     try {
       const { id } = req.params;
       const { status, feedback } = req.body;
-      const db = admin.firestore();
+      const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
       
       await db.collection("listings").doc(id).update({
         status,
@@ -672,7 +672,7 @@ async function startServer() {
       if (generated_signature === razorpay_signature) {
         // Payment verified
         if (admin.apps.length > 0) {
-          const db = admin.firestore();
+          const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
           const expiryDate = new Date();
           expiryDate.setMonth(expiryDate.getMonth() + 1); // 1 month subscription
 
@@ -733,7 +733,7 @@ async function startServer() {
 
   const checkSubscriptions = async () => {
     console.log("Running subscription expiration check...");
-    const db = admin.firestore();
+    const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
     const now = new Date();
     const sevenDaysFromNow = new Date();
     sevenDaysFromNow.setDate(now.getDate() + 7);
