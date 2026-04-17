@@ -27,6 +27,13 @@ export const Login = () => {
         body: JSON.stringify({ email, password }),
       });
       
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text();
+        console.error("Non-JSON response received:", text.substring(0, 100));
+        throw new Error("Your hosting environment is serving a static page instead of the backend API. Please ensure Node.js is active and running in your Hostinger panel.");
+      }
+      
       const data = await response.json();
       
       if (!response.ok) {

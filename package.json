@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build",
-    "start": "NODE_ENV=production tsx server.ts",
-    "clean": "rm -rf dist",
+    "build:client": "vite build",
+    "build:server": "esbuild server.ts --bundle --minify --platform=node --target=node20 --outfile=server-prod.js --format=esm --external:vite",
+    "build": "npm run build:client && npm run build:server",
+    "start": "NODE_ENV=production node server-prod.js",
+    "clean": "rm -rf dist server-prod.js",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

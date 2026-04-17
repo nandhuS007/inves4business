@@ -53,14 +53,27 @@ sudo npm install -g pm2
 
 ---
 
-## 4. Start the Backend with PM2
+## 4. Start the Application
 
-Since we are using `tsx` for development, for production it is recommended to compile `server.ts` or use `tsx` directly if performance allows. To start the server:
-```bash
-pm2 start tsx -- server.ts --name "inves-backend"
-pm2 save
-pm2 startup
-```
+We have optimized the build process to produce a single, bundled production server file for maximum compatibility.
+
+1. **Build the project**:
+   ```bash
+   npm run build
+   ```
+   This generates the `dist/` folder (frontend) and `server-prod.js` (backend).
+
+2. **Start the server**:
+   ```bash
+   pm2 start server-prod.js --name "inves-app"
+   ```
+
+If you are using **Hostinger's Managed Node.js Panel** (instead of a VPS):
+1. Go to **Advanced** -> **Node.js**.
+2. Set the **Entry File** to `server-prod.js`.
+3. Set the **Root Directory** to the folder containing your `package.json`.
+4. Run `npm install` and then `npm run build` from the panel's terminal (or your git deployment).
+5. Click **Start/Restart**.
 
 ---
 
